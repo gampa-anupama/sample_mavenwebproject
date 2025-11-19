@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    tools {
+        jdk 'JAVA_HOME'
+        maven 'MAVEN_HOME'
+    }
+
+    stages {
+
+        stage('Clone Code') {
+            steps {
+                git branch: 'master', url: 'https://github.com/gampa-anupama/sample_mavenwebproject.git'
+            }
+        }
+
+        stage('Build Project') {
+            steps {
+                bat 'mvn clean package'
+            }
+        }
+
+        stage('Deploy to Tomcat') {
+            steps {
+                bat 'copy target\\samplemavenwebproject.war C:\\Users\\anupa\\Downloads\\apache-tomcat-9.0.112\\apache-tomcat-9.0.112\\webapps\\'
+            }
+        }
+
+        stage('Restart Tomcat') {
+            steps {
+                bat 'C:\\Users\\anupa\\Downloads\\apache-tomcat-9.0.112\\apache-tomcat-9.0.112\\bin\\shutdown.bat || exit 0'
+                bat 'C:\\Users\\anupa\\Downloads\\apache-tomcat-9.0.112\\apache-tomcat-9.0.112\\bin\\startup.bat'
+            }
+        }
+
+        stage('Done') {
+            steps {
+                echo "App deployed at http://localhost:8081/samplemavenwebproject"
+            }
+        }
+    }
+}
